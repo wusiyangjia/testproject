@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私人银行 · 流水查询</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="ambient-glow ambient-glow--top"></div>
+<div class="ambient-glow ambient-glow--bottom"></div>
+
+<div class="app-container">
+  <!-- ── Header ── -->
+  <header class="page-header">
+    <div class="brand-col">
+      <span class="brand-tag">Private Banking</span>
+      <h1 class="brand-title">交易<em>流水</em>查询</h1>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn--ghost" onclick="handleRefresh()" title="刷新数据">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        刷新
+      </button>
+      <button class="btn btn--ghost" onclick="handlePrint()" title="打印流水">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 12H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2"/><rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        打印
+      </button>
+      <button class="btn btn--primary" onclick="handleDownload()" id="btn-download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        下载流水
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Stats ── -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">账户余额</div>
+      <div class="stat-value stat-value--accent">1,285,600<span class="stat-currency">CNY</span></div>
+      <div class="stat-sub"><span class="positive">↑ 2.4%</span> 较上月</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">本月收入</div>
+      <div class="stat-value">386,200<span class="stat-currency">CNY</span></div>
+      <div class="stat-sub">共 12 笔</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">本月支出</div>
+      <div class="stat-value">218,450<span class="stat-currency">CNY</span></div>
+      <div class="stat-sub"><span class="negative">↓ 8.1%</span> 较上月</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">交易笔数</div>
+      <div class="stat-value">47<span class="stat-currency">笔</span></div>
+      <div class="stat-sub">近30天记录</div>
+    </div>
+  </div>
+
+  <!-- ── Filters ── -->
+  <div class="filter-panel" id="filterPanel">
+    <div class="filter-group filter-group--grow">
+      <label class="filter-label">搜索</label>
+      <input type="text" class="filter-input" id="filterSearch" placeholder="交易摘要、对方户名、备注…" oninput="applyFilters()">
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <label class="filter-label">交易类型</label>
+      <select class="filter-input filter-input--select" id="filterType" onchange="applyFilters()">
+        <option value="all">全部类型</option>
+        <option value="transfer">转账汇款</option>
+        <option value="consumption">消费支出</option>
+        <option value="income">收入入账</option>
+        <option value="withdrawal">现金取款</option>
+      </select>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <label class="filter-label">起始日期</label>
+      <input type="date" class="filter-input filter-input--date" id="filterDateFrom" onchange="applyFilters()">
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">截止日期</label>
+      <input type="date" class="filter-input filter-input--date" id="filterDateTo" onchange="applyFilters()">
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <label class="filter-label">金额范围</label>
+      <select class="filter-input filter-input--select" id="filterAmount" onchange="applyFilters()">
+        <option value="all">全部金额</option>
+        <option value="small">1,000 以下</option>
+        <option value="medium">1,000 – 10,000</option>
+        <option value="large">10,000 – 100,000</option>
+        <option value="xlarge">100,000 以上</option>
+      </select>
+    </div>
+    <div class="filter-group filter-group--shrink">
+      <button class="btn btn--ghost" onclick="resetFilters()" style="height:38px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        </svg>
+        重置
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Active Filter Badges ── -->
+  <div style="margin-bottom:20px; display:flex; gap:8px; flex-wrap:wrap;" id="activeBadges"></div>
+
+  <!-- ── Table ── -->
+  <div class="table-shell">
+    <div class="table-header-bar">
+      <div class="table-header-bar__left">
+        <span class="result-count" id="resultCount">47<span>条记录</span></span>
+        <span class="badge-filter" id="selectedBadge" style="display:none;" onclick="clearSelection()">
+          <span class="badge-filter__dot"></span>
+          已选 <span id="selectedCount">0</span> 笔
+          <span class="badge-filter__x">×</span>
+        </span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn--ghost btn--icon" onclick="selectAll()" title="全选">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th class="checkbox-col"><span class="custom-checkbox" id="headerCheckbox" onclick="toggleSelectAll()"><svg viewBox="0 0 24 24" fill="none" stroke="%230a0b0f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></th>
+            <th onclick="sortTable('date')" id="th-date">交易日期 <span class="sort-arrow">↕</span></th>
+            <th onclick="sortTable('type')" id="th-type">类型 <span class="sort-arrow">↕</span></th>
+            <th>对方信息</th>
+            <th>对方账号</th>
+            <th onclick="sortTable('amount')" id="th-amount">金额 <span class="sort-arrow">↕</span></th>
+            <th onclick="sortTable('balance')" id="th-balance">余额 <span class="sort-arrow">↕</span></th>
+            <th>摘要 / 备注</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination-bar">
+      <div class="pagination-info" id="paginationInfo">显示第 1–15 条，共 47 条记录</div>
+      <div class="pagination-controls" id="paginationControls"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast">
+  <svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+  <span id="toastMsg">下载成功</span>
+</div>
+
+<!-- Scripts（按依赖顺序加载） -->
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

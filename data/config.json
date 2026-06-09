@@ -1,0 +1,16 @@
+{
+  "typeMap": {
+    "transfer": "转账汇款",
+    "consumption": "消费支出",
+    "income": "收入入账",
+    "withdrawal": "现金取款"
+  },
+  "typeColors": {
+    "transfer": "cell-type--transfer",
+    "consumption": "cell-type--consumption",
+    "income": "cell-type--income",
+    "withdrawal": "cell-type--withdrawal"
+  },
+  "pageSize": 15,
+  "initialBalance": 1285600
+}
