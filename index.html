@@ -42,10 +42,20 @@
       <div class="stat-value" style="color:#8a94a8" id="statPending">0</div>
       <div class="stat-sub">排队等待下载</div>
     </div>
+    <div class="stat-card" style="--accent-color:#78b8e0">
+      <div class="stat-label">网银登录</div>
+      <div class="stat-value" style="color:#78b8e0" id="statLoggingIn">0</div>
+      <div class="stat-sub"><span class="status-dot" style="background:#78b8e0;display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;animation:statusPulse 1.4s ease-in-out infinite;"></span>正在登录网银</div>
+    </div>
     <div class="stat-card" style="--accent-color:#4e90c8">
-      <div class="stat-label">进行中</div>
-      <div class="stat-value" style="color:#78b8e0" id="statInProgress">0</div>
-      <div class="stat-sub">登录 / 下载 / 加工</div>
+      <div class="stat-label">流水下载</div>
+      <div class="stat-value" style="color:#4e90c8" id="statDownloading">0</div>
+      <div class="stat-sub"><span class="status-dot" style="background:#4e90c8;display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;animation:statusPulse 1.4s ease-in-out infinite;"></span>下载交易流水</div>
+    </div>
+    <div class="stat-card" style="--accent-color:#d4985a">
+      <div class="stat-label">数据加工</div>
+      <div class="stat-value" style="color:#d4985a" id="statProcessing">0</div>
+      <div class="stat-sub">格式化 / 入库</div>
     </div>
     <div class="stat-card" style="--accent-color:#6ab8a0">
       <div class="stat-label">已完成</div>

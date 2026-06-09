@@ -26,13 +26,17 @@ function renderDashboard() {
 function updateDashboardStats() {
   const total = allAccounts.length;
   const pending = allAccounts.filter(a => a.status === 'pending').length;
-  const inProgress = allAccounts.filter(a => ['logging_in','downloading','processing'].includes(a.status)).length;
+  const loggingIn = allAccounts.filter(a => a.status === 'logging_in').length;
+  const downloading = allAccounts.filter(a => a.status === 'downloading').length;
+  const processing = allAccounts.filter(a => a.status === 'processing').length;
   const completed = allAccounts.filter(a => a.status === 'completed').length;
   const failed = allAccounts.filter(a => a.status === 'failed').length;
 
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statPending').textContent = pending;
-  document.getElementById('statInProgress').textContent = inProgress;
+  document.getElementById('statLoggingIn').textContent = loggingIn;
+  document.getElementById('statDownloading').textContent = downloading;
+  document.getElementById('statProcessing').textContent = processing;
   document.getElementById('statCompleted').textContent = completed;
   document.getElementById('statFailed').textContent = failed;
 }

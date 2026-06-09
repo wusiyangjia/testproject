@@ -10,7 +10,8 @@
       "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('banks loaded:',j.length,'accounts'\\);console.log\\('statuses:',j.reduce\\(\\(m,a\\)=>{m[a.status]=\\(m[a.status]||0\\)+1;return m},{}\\)\\);}\\)\")",
       "Bash(curl -s http://localhost:8080/data/transactions/txn_001.json)",
       "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('txn_001 loaded:',j.length,'records'\\);console.log\\('sample:',j[0].dateStr, j[0].typeLabel, j[0].amountStr\\);}\\)\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ],
     "additionalDirectories": [
       "c:\\work\\workspace_Claude\\TestProject"
