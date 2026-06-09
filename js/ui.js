@@ -1,72 +1,104 @@
 /**
  * ui.js — DOM 渲染函数
- * 依赖：data.js（fmtNum, fmtDate, typeMap）、state.js（所有状态变量）
+ * 依赖：data.js、state.js
  */
 
-// ── 表格渲染 ──
+// ══════════════════════════════════════════
+// 视图容器切换
+// ══════════════════════════════════════════
 
-function renderTable() {
-  const tbody = document.getElementById('tableBody');
-  const totalPages = Math.ceil(filteredRecords.length / pageSize) || 1;
-  if (currentPage > totalPages) currentPage = totalPages;
-  const start = (currentPage - 1) * pageSize;
-  const page = filteredRecords.slice(start, start + pageSize);
-
-  if (page.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:60px 20px;color:var(--text-muted);">
-      <div style="font-size:15px;margin-bottom:8px;">暂无匹配的交易记录</div>
-      <div style="font-size:12px;">尝试调整筛选条件</div>
-    </td></tr>`;
-    document.getElementById('resultCount').innerHTML = '0<span>条记录</span>';
-    document.getElementById('paginationInfo').textContent = '无匹配记录';
-    document.getElementById('paginationControls').innerHTML = '';
-    updateSelectionUI();
-    return;
-  }
-
-  tbody.innerHTML = page.map((r, idx) => `
-    <tr style="animation-delay:${idx * 0.03}s" data-id="${r.id}">
-      <td class="checkbox-col">
-        <span class="custom-checkbox${selectedIds.has(r.id) ? ' checked' : ''}" onclick="toggleRow(${r.id}, event)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="%230a0b0f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </span>
-      </td>
-      <td class="cell-date">${r.dateStr}<br><span style="font-size:10px;color:var(--text-muted)">${r.timeStr}</span></td>
-      <td><span class="cell-type ${r.typeColor}">${r.typeLabel}</span></td>
-      <td>${r.counterparty}</td>
-      <td style="font-family:'JetBrains Mono','DM Sans',monospace;font-size:12px;letter-spacing:0.03em;">${r.account.replace(/(\d{4})/g, '$1 ').trim()}</td>
-      <td class="cell-amount ${r.isCredit ? 'cell-amount--credit' : 'cell-amount--debit'}">${r.amountStr}</td>
-      <td class="cell-balance">${r.balanceStr}</td>
-      <td class="cell-remark" title="${r.remark}">${r.remark}</td>
-    </tr>
-  `).join('');
-
-  // Trigger row animations
-  requestAnimationFrame(() => {
-    tbody.querySelectorAll('tr').forEach((tr, i) => {
-      tr.style.animation = 'none';
-      tr.offsetHeight;
-      tr.style.animation = `rowReveal 0.45s var(--transition-smooth) ${i * 0.03}s both`;
-    });
-  });
-
-  document.getElementById('resultCount').innerHTML = `${filteredRecords.length}<span>条记录</span>`;
-  const end = Math.min(start + pageSize, filteredRecords.length);
-  document.getElementById('paginationInfo').textContent =
-    `显示第 ${start + 1}–${end} 条，共 ${filteredRecords.length} 条记录`;
-  renderPagination(totalPages);
-  updateSelectionUI();
+function showView(view) {
+  currentView = view;
+  document.getElementById('viewDashboard').style.display = view === 'dashboard' ? 'block' : 'none';
+  document.getElementById('viewDetail').style.display = view === 'detail' ? 'block' : 'none';
 }
 
-// ── 分页渲染 ──
+// ══════════════════════════════════════════
+// 仪表盘渲染
+// ══════════════════════════════════════════
 
-function renderPagination(totalPages) {
-  const container = document.getElementById('paginationControls');
+function renderDashboard() {
+  updateDashboardStats();
+  renderDashboardTable();
+  updateDashboardBadges();
+}
+
+function updateDashboardStats() {
+  const total = allAccounts.length;
+  const pending = allAccounts.filter(a => a.status === 'pending').length;
+  const inProgress = allAccounts.filter(a => ['logging_in','downloading','processing'].includes(a.status)).length;
+  const completed = allAccounts.filter(a => a.status === 'completed').length;
+  const failed = allAccounts.filter(a => a.status === 'failed').length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statInProgress').textContent = inProgress;
+  document.getElementById('statCompleted').textContent = completed;
+  document.getElementById('statFailed').textContent = failed;
+}
+
+function renderDashboardTable() {
+  const totalPages = Math.ceil(dashboardFiltered.length / pageSize) || 1;
+  if (dashboardCurrentPage > totalPages) dashboardCurrentPage = totalPages;
+  const start = (dashboardCurrentPage - 1) * pageSize;
+  const page = dashboardFiltered.slice(start, start + pageSize);
+
+  const tbody = document.getElementById('dashboardBody');
+
+  if (page.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+      <div style="font-size:15px;margin-bottom:8px;">暂无匹配的银行账户</div>
+      <div style="font-size:12px;">尝试调整筛选条件</div>
+    </td></tr>`;
+  } else {
+    tbody.innerHTML = page.map((a, idx) => `
+      <tr style="animation-delay:${idx * 0.02}s" data-id="${a.id}" class="${a.status === 'completed' ? 'row--clickable' : ''}" onclick="${a.status === 'completed' ? `navigateToDetail(${a.id})` : ''}">
+        <td>
+          <div class="bank-name">${a.bankName}</div>
+          <div class="bank-sub">${a.subBranch} · ${a.accountName}</div>
+        </td>
+        <td>
+          <span class="account-number">${a.accountNumber}</span>
+        </td>
+        <td>
+          <span class="status-badge ${statusColors[a.status]}">
+            ${a.status === 'logging_in' || a.status === 'downloading' ? '<span class="status-dot status-dot--pulse"></span>' : '<span class="status-dot"></span>'}
+            ${statusLabels[a.status]}
+          </span>
+          ${a.status === 'downloading' || a.status === 'processing' ? renderProgressBar(a.progress) : ''}
+        </td>
+        <td class="cell-progress">
+          ${a.status === 'completed' ? `<span class="txn-count">${a.transactionCount} 笔</span>` :
+            a.status === 'failed' ? `<span class="error-hint" title="${a.errorMsg || ''}">${a.errorMsg || '未知错误'}</span>` :
+            a.status === 'pending' ? '<span class="muted-hint">—</span>' :
+            `<span class="progress-text">${a.progress}%</span>`}
+        </td>
+        <td class="cell-time">${fmtDateTime(a.lastUpdated)}</td>
+        <td class="cell-action">
+          ${a.status === 'completed' ? `<button class="btn btn--tiny" onclick="event.stopPropagation();navigateToDetail(${a.id})">查看流水 →</button>` :
+            a.status === 'failed' ? `<button class="btn btn--tiny btn--retry" onclick="event.stopPropagation();showToast('已重新加入下载队列')">重试</button>` :
+            '<span class="muted-hint">—</span>'}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('dashboardResultCount').innerHTML = `${dashboardFiltered.length}<span>个账户</span>`;
+  const end = Math.min(start + pageSize, dashboardFiltered.length);
+  document.getElementById('dashboardPaginationInfo').textContent =
+    dashboardFiltered.length === 0 ? '无匹配账户' : `显示第 ${start + 1}–${end} 个，共 ${dashboardFiltered.length} 个账户`;
+  renderPagination('dashboardPaginationControls', totalPages, dashboardCurrentPage, 'goToDashboardPage');
+}
+
+function renderProgressBar(pct) {
+  return `<div class="progress-bar"><div class="progress-bar__fill" style="width:${pct}%"></div></div>`;
+}
+
+function renderPagination(containerId, totalPages, currentPage, goFnName) {
+  const container = document.getElementById(containerId);
   if (totalPages <= 1) { container.innerHTML = ''; return; }
   let html = '';
-  html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+  html += `<button class="page-btn" onclick="${goFnName}(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
 
   const pages = [];
   if (totalPages <= 7) {
@@ -80,80 +112,40 @@ function renderPagination(totalPages) {
   }
   pages.forEach(p => {
     if (p === '…') html += '<span class="page-ellipsis">…</span>';
-    else html += `<button class="page-btn${p === currentPage ? ' page-btn--active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+    else html += `<button class="page-btn${p === currentPage ? ' page-btn--active' : ''}" onclick="${goFnName}(${p})">${p}</button>`;
   });
-  html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+  html += `<button class="page-btn" onclick="${goFnName}(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
   container.innerHTML = html;
 }
 
-function goToPage(p) {
-  const total = Math.ceil(filteredRecords.length / pageSize) || 1;
+function goToDashboardPage(p) {
+  const total = Math.ceil(dashboardFiltered.length / pageSize) || 1;
   if (p < 1 || p > total) return;
-  currentPage = p;
-  renderTable();
+  dashboardCurrentPage = p;
+  renderDashboardTable();
 }
 
-// ── 选择状态 UI 更新 ──
-
-function updateSelectionUI() {
-  const badge = document.getElementById('selectedBadge');
-  const countEl = document.getElementById('selectedCount');
-  const headerCb = document.getElementById('headerCheckbox');
-
-  if (selectedIds.size > 0) {
-    badge.style.display = 'inline-flex';
-    countEl.textContent = selectedIds.size;
-  } else {
-    badge.style.display = 'none';
-  }
-
-  // Header checkbox 状态
-  const total = Math.ceil(filteredRecords.length / pageSize) || 1;
-  if (total === 0) { headerCb.classList.remove('checked'); return; }
-  const start = (currentPage - 1) * pageSize;
-  const page = filteredRecords.slice(start, start + pageSize);
-  const allSelected = page.length > 0 && page.every(r => selectedIds.has(r.id));
-  headerCb.classList.toggle('checked', allSelected);
-}
-
-// ── 激活筛选徽章 ──
-
-function updateActiveBadges() {
+function updateDashboardBadges() {
   const container = document.getElementById('activeBadges');
   const badges = [];
-
-  const search = document.getElementById('filterSearch').value.trim();
-  const type = document.getElementById('filterType').value;
-  const dateFrom = document.getElementById('filterDateFrom').value;
-  const dateTo = document.getElementById('filterDateTo').value;
-  const amount = document.getElementById('filterAmount').value;
-
-  if (search) {
+  if (dashboardSearch) {
     badges.push({
-      label: `搜索: "${search}"`,
-      onclick: `document.getElementById('filterSearch').value='';applyFilters();`
+      label: `搜索: "${dashboardSearch}"`,
+      onclick: `dashboardSearch='';document.getElementById('filterSearch').value='';applyDashboardFilters();`
     });
   }
-  if (type !== 'all') {
+  if (dashboardBankFilter !== 'all') {
     badges.push({
-      label: typeMap[type],
-      onclick: `document.getElementById('filterType').value='all';applyFilters();`
+      label: dashboardBankFilter,
+      onclick: `dashboardBankFilter='all';document.getElementById('filterBank').value='all';applyDashboardFilters();`
     });
   }
-  if (dateFrom || dateTo) {
+  if (dashboardStatusFilter !== 'all') {
     badges.push({
-      label: `${dateFrom || '…'} – ${dateTo || '…'}`,
-      onclick: `document.getElementById('filterDateFrom').value='';document.getElementById('filterDateTo').value='';applyFilters();`
+      label: statusLabels[dashboardStatusFilter],
+      onclick: `dashboardStatusFilter='all';document.getElementById('filterStatus').value='all';applyDashboardFilters();`
     });
   }
-  if (amount !== 'all') {
-    const amtLabels = { small: '<1,000', medium: '1K–10K', large: '10K–100K', xlarge: '>100K' };
-    badges.push({
-      label: amtLabels[amount],
-      onclick: `document.getElementById('filterAmount').value='all';applyFilters();`
-    });
-  }
-
   container.innerHTML = badges.map(b => `
     <span class="badge-filter" onclick="event.stopPropagation();${b.onclick}" style="cursor:pointer;">
       <span class="badge-filter__dot"></span>${b.label}<span class="badge-filter__x">×</span>
@@ -161,7 +153,61 @@ function updateActiveBadges() {
   `).join('');
 }
 
-// ── Toast 通知 ──
+// ══════════════════════════════════════════
+// 明细页渲染
+// ══════════════════════════════════════════
+
+async function renderDetail() {
+  if (!selectedAccount) return;
+
+  // 更新面包屑
+  document.getElementById('detailBankName').textContent = selectedAccount.bankName;
+  document.getElementById('detailSubBranch').textContent = selectedAccount.subBranch;
+  document.getElementById('detailAccountInfo').textContent =
+    `账号: ${selectedAccount.accountNumber} · ${selectedAccount.accountName} · 本次下载 ${selectedAccount.transactionCount} 条交易`;
+
+  const totalPages = Math.ceil(detailFilteredRecords.length / pageSize) || 1;
+  if (detailCurrentPage > totalPages) detailCurrentPage = totalPages;
+  const start = (detailCurrentPage - 1) * pageSize;
+  const page = detailFilteredRecords.slice(start, start + pageSize);
+
+  const tbody = document.getElementById('detailBody');
+
+  if (page.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+      <div style="font-size:15px;margin-bottom:8px;">暂无交易记录</div>
+    </td></tr>`;
+  } else {
+    tbody.innerHTML = page.map((r, idx) => `
+      <tr style="animation-delay:${idx * 0.02}s">
+        <td class="cell-date">${r.dateStr}<br><span style="font-size:10px;color:var(--text-muted)">${r.timeStr}</span></td>
+        <td><span class="cell-type ${r.typeColor || typeColors[r.type] || ''}">${r.typeLabel}</span></td>
+        <td>${r.counterparty}</td>
+        <td style="font-family:'JetBrains Mono','DM Sans',monospace;font-size:12px;letter-spacing:0.03em;">${r.account.replace(/(\\d{4})/g, '$1 ').trim()}</td>
+        <td class="cell-amount ${r.isCredit ? 'cell-amount--credit' : 'cell-amount--debit'}">${r.amountStr}</td>
+        <td class="cell-balance">${r.balanceStr}</td>
+        <td class="cell-remark" title="${r.remark}">${r.remark}</td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('detailResultCount').innerHTML = `${detailFilteredRecords.length}<span>条记录</span>`;
+  const end = Math.min(start + pageSize, detailFilteredRecords.length);
+  document.getElementById('detailPaginationInfo').textContent =
+    detailFilteredRecords.length === 0 ? '无交易记录' : `显示第 ${start + 1}–${end} 条，共 ${detailFilteredRecords.length} 条记录`;
+  renderPagination('detailPaginationControls', totalPages, detailCurrentPage, 'goToDetailPage');
+}
+
+function goToDetailPage(p) {
+  const total = Math.ceil(detailFilteredRecords.length / pageSize) || 1;
+  if (p < 1 || p > total) return;
+  detailCurrentPage = p;
+  renderDetail();
+}
+
+// ══════════════════════════════════════════
+// Toast 通知
+// ══════════════════════════════════════════
 
 function showToast(msg) {
   const toast = document.getElementById('toast');

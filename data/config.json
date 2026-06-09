@@ -11,6 +11,31 @@
     "income": "cell-type--income",
     "withdrawal": "cell-type--withdrawal"
   },
+  "statusLabels": {
+    "pending": "等待中",
+    "logging_in": "登录中",
+    "downloading": "下载中",
+    "processing": "加工中",
+    "completed": "已完成",
+    "failed": "失败"
+  },
+  "statusColors": {
+    "pending": "status--pending",
+    "logging_in": "status--logging",
+    "downloading": "status--downloading",
+    "processing": "status--processing",
+    "completed": "status--completed",
+    "failed": "status--failed"
+  },
+  "statusOrder": ["logging_in", "downloading", "processing", "pending", "completed", "failed"],
+  "bankList": [
+    "中国光大银行",
+    "中国建设银行",
+    "中信银行",
+    "中国农业银行",
+    "中国工商银行",
+    "招商银行"
+  ],
   "pageSize": 15,
   "initialBalance": 1285600
 }

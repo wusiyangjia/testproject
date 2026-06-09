@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir -p \"c:/work/workspace_Claude/TestProject/data\")"
+      "Bash(mkdir -p \"c:/work/workspace_Claude/TestProject/data\")",
+      "Bash(node -e ' *)",
+      "Bash(python -m http.server 8080 --bind 0.0.0.0)",
+      "Bash(curl -s http://localhost:8080)",
+      "Bash(curl -s http://localhost:8080/data/banks.json)",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); console.log\\('banks loaded:',j.length,'accounts'\\); console.log\\('first:',JSON.stringify\\(j[0],null,2\\)\\)\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('banks loaded:',j.length,'accounts'\\);console.log\\('statuses:',j.reduce\\(\\(m,a\\)=>{m[a.status]=\\(m[a.status]||0\\)+1;return m},{}\\)\\);}\\)\")",
+      "Bash(curl -s http://localhost:8080/data/transactions/txn_001.json)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('txn_001 loaded:',j.length,'records'\\);console.log\\('sample:',j[0].dateStr, j[0].typeLabel, j[0].amountStr\\);}\\)\")",
+      "Bash(git add *)"
     ],
     "additionalDirectories": [
       "c:\\work\\workspace_Claude\\TestProject"

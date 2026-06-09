@@ -1,23 +1,24 @@
 /**
- * data.js — 数据加载、常量、工具函数
+ * data.js — 数据加载模块
  * 依赖：无
  *
- * 所有业务数据存储在独立的 JSON 文件中：
- *   data/counterparties.json  — 对方户名池
- *   data/remarks.json         — 备注池
- *   data/config.json          — 类型映射 & 颜色配置
- *   data/transactions.json    — 交易流水记录
+ * 从独立 JSON 文件加载：
+ *   data/config.json   — 类型/状态配置
+ *   data/banks.json    — 银行账户监控数据
+ *   data/transactions/ — 各账户的流水明细
  */
 
-// ── 全局数据变量（由 loadData() 填充）──
-let counterparties = [];
-let remarks = [];
+// ── 全局数据 ──
+let config = {};
 let typeMap = {};
 let typeColors = {};
-let allRecords = [];
+let statusLabels = {};
+let statusColors = {};
+let bankList = [];
+let allAccounts = [];
+let allRecords = [];        // 当前查看的账户流水
 
 // ── 工具函数 ──
-
 function fmtNum(n) {
   return n.toLocaleString('zh-CN');
 }
@@ -29,31 +30,47 @@ function fmtDate(d) {
   return `${y}-${m}-${day}`;
 }
 
-// ── 数据加载（异步）──
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMs = now - d;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return '刚刚';
+  if (diffMin < 60) return diffMin + '分钟前';
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return diffHr + '小时前';
+  return fmtDate(d) + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
 
-async function loadData() {
-  try {
-    const [c, r, cfg, txn] = await Promise.all([
-      fetch('data/counterparties.json').then(res => res.json()),
-      fetch('data/remarks.json').then(res => res.json()),
-      fetch('data/config.json').then(res => res.json()),
-      fetch('data/transactions.json').then(res => res.json())
-    ]);
+// ── 数据加载 ──
+async function loadConfig() {
+  const res = await fetch('data/config.json');
+  config = await res.json();
+  typeMap = config.typeMap;
+  typeColors = config.typeColors;
+  statusLabels = config.statusLabels;
+  statusColors = config.statusColors;
+  bankList = config.bankList;
+  return config;
+}
 
-    counterparties = c;
-    remarks = r;
-    typeMap = cfg.typeMap;
-    typeColors = cfg.typeColors;
+async function loadBanks() {
+  const res = await fetch('data/banks.json');
+  allAccounts = await res.json();
+  // parse dates
+  allAccounts.forEach(a => { a.lastUpdated = new Date(a.lastUpdated); });
+  return allAccounts;
+}
 
-    // 将 ISO 日期字符串还原为 Date 对象
-    allRecords = txn.map(record => ({
-      ...record,
-      date: new Date(record.date)
-    }));
-
-    return allRecords;
-  } catch (err) {
-    console.error('数据加载失败，请确保通过 HTTP 服务器打开页面（非 file:// 协议）', err);
-    throw err;
+async function loadTransactions(accountId) {
+  const acct = allAccounts.find(a => a.id === accountId);
+  if (!acct || !acct.transactionFile) {
+    allRecords = [];
+    return [];
   }
+  const res = await fetch('data/transactions/' + acct.transactionFile);
+  const records = await res.json();
+  // parse dates back to Date objects
+  allRecords = records.map(r => ({ ...r, date: new Date(r.date) }));
+  return allRecords;
 }
