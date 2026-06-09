@@ -9,19 +9,21 @@
   --text-primary: #e2e6f0;
   --text-secondary: #8a94a8;
   --text-muted: #555d6e;
-  --accent: #4e90c8;
-  --accent-light: #78b8e0;
-  --accent-dim: #30608a;
-  --accent-secondary: #6e95b8;
-  --teal-ink: #6ab8a0;
-  --red-ink: #d4716a;
-  --orange-ink: #d4985a;
+  --accent: #C41230;
+  --accent-light: #E84050;
+  --accent-dim: #8B1A2B;
+  --accent-secondary: #D4956A;
+  --gold: #C4946A;
+  --gold-light: #D4A87A;
+  --teal-ink: #C4946A;
+  --red-ink: #E85555;
+  --orange-ink: #D4956A;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 20px;
-  --shadow-panel: 0 1px 0 0 rgba(78, 144, 200, 0.04), 0 4px 24px rgba(0,0,0,0.4);
-  --shadow-dropdown: 0 1px 0 0 rgba(78, 144, 200, 0.08), 0 8px 40px rgba(0,0,0,0.6);
+  --shadow-panel: 0 1px 0 0 rgba(196, 18, 48, 0.04), 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-dropdown: 0 1px 0 0 rgba(196, 18, 48, 0.08), 0 8px 40px rgba(0,0,0,0.6);
   --transition-fast: 160ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -30,7 +32,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'DM Sans', -apple-system, sans-serif;
+  font-family: 'Nunito', -apple-system, sans-serif;
   background-color: var(--bg-deep);
   color: var(--text-primary);
   min-height: 100vh;
@@ -64,7 +66,7 @@ body::after {
   right: -120px;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(78,144,200,0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(196,18,48,0.06) 0%, transparent 70%);
 }
 .ambient-glow--bottom {
   bottom: -200px;
@@ -104,17 +106,17 @@ body::after {
   gap: 4px;
 }
 .brand-tag {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--accent);
 }
 .brand-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 38px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-primary);
   line-height: 1.1;
@@ -132,9 +134,9 @@ body::after {
 
 /* ── Buttons ── */
 .btn {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.02em;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
@@ -164,13 +166,13 @@ body::after {
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #3a6e94 100%);
-  color: #e8f0f8;
+  background: linear-gradient(135deg, var(--accent) 0%, #7A1020 100%);
+  color: #fef0f0;
   border-color: transparent;
-  box-shadow: 0 2px 12px rgba(78,144,200,0.25);
+  box-shadow: 0 2px 12px rgba(196,18,48,0.25);
 }
 .btn--primary:hover {
-  box-shadow: 0 4px 20px rgba(78,144,200,0.4);
+  box-shadow: 0 4px 20px rgba(196,18,48,0.4);
   transform: translateY(-1px);
 }
 
@@ -197,13 +199,13 @@ body::after {
   border-radius: 4px;
   background: transparent;
   color: var(--accent-light);
-  border: 1px solid rgba(78,144,200,0.2);
+  border: 1px solid rgba(196,18,48,0.2);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 .btn--tiny:hover {
-  background: rgba(78,144,200,0.1);
-  border-color: rgba(78,144,200,0.4);
+  background: rgba(196,18,48,0.1);
+  border-color: rgba(196,18,48,0.4);
 }
 .btn--retry {
   color: var(--orange-ink);
@@ -250,16 +252,16 @@ body::after {
 
 .stat-label {
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 6px;
 }
 .stat-value {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 30px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
@@ -303,7 +305,7 @@ body::after {
   color: var(--text-muted);
 }
 .filter-input {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 13px;
   color: var(--text-primary);
   background: var(--bg-card);
@@ -316,7 +318,7 @@ body::after {
 .filter-input::placeholder { color: var(--text-muted); }
 .filter-input:focus {
   border-color: var(--accent-dim);
-  box-shadow: 0 0 0 3px rgba(78,144,200,0.08);
+  box-shadow: 0 0 0 3px rgba(196,18,48,0.08);
 }
 .filter-input--select {
   appearance: none;
@@ -344,16 +346,16 @@ body::after {
   font-weight: 500;
   letter-spacing: 0.04em;
   color: var(--accent-light);
-  background: rgba(78,144,200,0.08);
-  border: 1px solid rgba(78,144,200,0.15);
+  background: rgba(196,18,48,0.08);
+  border: 1px solid rgba(196,18,48,0.15);
   border-radius: 20px;
   padding: 4px 12px 4px 8px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 .badge-filter:hover {
-  background: rgba(78,144,200,0.14);
-  border-color: rgba(78,144,200,0.3);
+  background: rgba(196,18,48,0.14);
+  border-color: rgba(196,18,48,0.3);
 }
 .badge-filter__dot {
   width: 6px;
@@ -390,14 +392,14 @@ body::after {
   gap: 16px;
 }
 .result-count {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 .result-count span {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: var(--text-muted);
@@ -423,7 +425,7 @@ table {
 }
 thead th {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -470,7 +472,7 @@ tbody td {
   cursor: pointer;
 }
 .row--clickable:hover {
-  background: rgba(78,144,200,0.04) !important;
+  background: rgba(196,18,48,0.04) !important;
 }
 
 .bank-name {
@@ -485,7 +487,7 @@ tbody td {
 }
 
 .account-number {
-  font-family: 'JetBrains Mono', 'DM Sans', monospace;
+  font-family: 'JetBrains Mono', 'Nunito', monospace;
   font-size: 12px;
   letter-spacing: 0.04em;
   color: var(--text-secondary);
@@ -526,39 +528,39 @@ tbody td {
 .status--pending .status-dot { background: #8a94a8; }
 
 .status--logging {
-  color: #78b8e0;
-  background: rgba(120,184,224,0.1);
-  border: 1px solid rgba(120,184,224,0.18);
+  color: #F06070;
+  background: rgba(240,96,112,0.1);
+  border: 1px solid rgba(240,96,112,0.18);
 }
-.status--logging .status-dot { background: #78b8e0; }
+.status--logging .status-dot { background: #F06070; }
 
 .status--downloading {
-  color: #4e90c8;
-  background: rgba(78,144,200,0.12);
-  border: 1px solid rgba(78,144,200,0.2);
+  color: #C41230;
+  background: rgba(196,18,48,0.12);
+  border: 1px solid rgba(196,18,48,0.2);
 }
-.status--downloading .status-dot { background: #4e90c8; }
+.status--downloading .status-dot { background: #C41230; }
 
 .status--processing {
-  color: #d4985a;
-  background: rgba(212,152,90,0.1);
-  border: 1px solid rgba(212,152,90,0.18);
+  color: #D4956A;
+  background: rgba(212,149,106,0.1);
+  border: 1px solid rgba(212,149,106,0.18);
 }
-.status--processing .status-dot { background: #d4985a; }
+.status--processing .status-dot { background: #D4956A; }
 
 .status--completed {
-  color: #6ab8a0;
-  background: rgba(106,184,160,0.1);
-  border: 1px solid rgba(106,184,160,0.18);
+  color: #5BA88A;
+  background: rgba(91,168,138,0.1);
+  border: 1px solid rgba(91,168,138,0.18);
 }
-.status--completed .status-dot { background: #6ab8a0; }
+.status--completed .status-dot { background: #5BA88A; }
 
 .status--failed {
-  color: #d4716a;
-  background: rgba(212,113,106,0.1);
-  border: 1px solid rgba(212,113,106,0.18);
+  color: #E85555;
+  background: rgba(232,85,85,0.1);
+  border: 1px solid rgba(232,85,85,0.18);
 }
-.status--failed .status-dot { background: #d4716a; }
+.status--failed .status-dot { background: #E85555; }
 
 /* ── Progress bar ── */
 .progress-bar {
@@ -605,7 +607,7 @@ tbody td {
 }
 
 .cell-time {
-  font-family: 'JetBrains Mono', 'DM Sans', monospace;
+  font-family: 'JetBrains Mono', 'Nunito', monospace;
   font-size: 11px;
   color: var(--text-muted);
   white-space: nowrap;
@@ -619,13 +621,13 @@ tbody td {
 
 /* ── Detail: transaction table ── */
 .cell-date {
-  font-family: 'JetBrains Mono', 'DM Sans', monospace;
+  font-family: 'JetBrains Mono', 'Nunito', monospace;
   font-size: 12px;
   letter-spacing: 0.02em;
   color: var(--text-primary);
 }
 .cell-amount {
-  font-family: 'JetBrains Mono', 'DM Sans', monospace;
+  font-family: 'JetBrains Mono', 'Nunito', monospace;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -633,7 +635,7 @@ tbody td {
 .cell-amount--credit { color: var(--teal-ink); }
 .cell-amount--debit { color: var(--red-ink); }
 .cell-balance {
-  font-family: 'JetBrains Mono', 'DM Sans', monospace;
+  font-family: 'JetBrains Mono', 'Nunito', monospace;
   font-size: 12px;
   color: var(--text-primary);
 }
@@ -694,9 +696,9 @@ tbody td {
   gap: 8px;
 }
 .breadcrumb-bank {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 24px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-primary);
 }
 .breadcrumb-sep {
@@ -736,7 +738,7 @@ tbody td {
   gap: 4px;
 }
 .page-btn {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -754,9 +756,9 @@ tbody td {
   background: var(--bg-hover);
 }
 .page-btn--active {
-  background: rgba(78,144,200,0.12);
+  background: rgba(196,18,48,0.12);
   color: var(--accent-light);
-  border-color: rgba(78,144,200,0.2);
+  border-color: rgba(196,18,48,0.2);
 }
 .page-btn:disabled {
   opacity: 0.3;
